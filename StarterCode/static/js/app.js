@@ -1,52 +1,42 @@
-// from data.js
-var tableData = data;
+// PART 1: Append a table to the web page and add new rows of data for each UFO sighting.
+// Use d3 to select and change/modify the table body
 
-// YOUR CODE HERE!
+let tbody = d3.select("tbody");
+let columns = ["datetime", "city", "state", "country", "shape", "durationMinutes", "comments"];
+let datetimeinput = d3.select("#datetime");
+let button = d3.select("#filter-btn");
+let filterByDate = "";
 
-var date = data.map(date =>date.datetime);
-// console.log(date);
-var city = data.map(city => city.city);
-// console.log(city);
-var state = data.map(state => state.state);
-// console.log(state);
-var countries = data.map(countr => countr.country);
-// console.log(countries);
-var shape = data.map(shape => shape.shape);
-// console.log(shape);
-var durationMinutes = data.map(minutes => minutes.durationMinutes);
-// console.log(durationMinutes);
-var comments = data.map(comment => comment.comments);
-// console.log(comments);
+console.log(data)
 
+// Define function called "populate" to populate data into table.
+// Use forEach to call a function on each element. 
+let populate = (getData) => {
+    getData.forEach(ufoSightings => {
+        let row = tbody.append("tr");
+        columns.forEach(column => row.append("td").text(ufoSightings[column])
+        )
+    });
+}
 
+// Populate table with the input "data" (the data file)
+populate(data)
 
-function buildTable(date, city, state, countries, shape, durationMinutes, comments){
-    var table = d3.select("#ufo-table");
+// PART 2: Use a date form in your HTML document and write JavaScript code that will listen for events 
+// and search through the date/time column to find rows that match user input.
+button.on("click", () => {
+    let dateInput = d3.select("#datetime").property("value").trim();
+    filterByDate = data.filter(data => data.datetime === dateInput);
+    tbody.html("");
+    let response = {
+        filterByDate
+    }
     
-    var tbody = table.select("tbody");
-    var trow;
-
-    for (var i = 0; i < data.lenght; i++){
-        trow.append("tr");
-        trow.append("td").text(date[i]);
-        trow.append("td").text(city[i]); 
-        trow.append("td").text(state[i]);
-        trow.append("td").text(countries[i]);
-        trow.append("td").text(shape[i]);
-        trow.append("td").text(durationMinutes[i]);
-        trow.append("td").text(comments[i]);
-        console.log("this is the " + table)
-        }
-};
-
-function handleClick() {
-    console.log("A button was clicked!");
-  
-    // We can use d3 to see the object that dispatched the 
-    // an event always has a target which is what was clicked 
-    console.log(d3.event.target);
-  }
-  
-  // We can use the `on` function in d3 to attach an event to the handler function
-  button.on("click", handleClick);
- 
+    if (response.filterByDate.length !== 0) {
+        populate(filterByDate);
+    }
+    else {
+        tbody.append("tr").append("td").text("No results found.");
+    }
+}
+)
